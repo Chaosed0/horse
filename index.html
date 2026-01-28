@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<link rel="stylesheet" href="theme/styles.css" type="text/css"></link>
+<script type="text/javascript">
+    function download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+
+    function genSpeedproCsv(raceinfo, speedpro) {
+        var csv = [];
+
+        var header = [];
+
+        header.push(raceinfo.Date);
+        header.push(raceinfo.RaceNo);
+        header.push(raceinfo.Racecourse);
+        header.push(raceinfo.Track);
+        header.push(raceinfo.Course);
+        header.push(raceinfo.RaceClass);
+        header.push(raceinfo.RatingRange);
+        header.push(raceinfo.Distance);
+        header.push(raceinfo.RaceName);
+        header.push(raceinfo.PostTime);
+        header.push(raceinfo.CloseTime);
+
+        csv.push(header);
+        csv.push('');
+
+        header = [];
+
+        header.push("Runner Number");
+        header.push("Name");
+        header.push("Draw");
+        header.push("Energy Required");
+
+        header.push("5th-Last Run Energy");
+        header.push("5th-Last Run Racecourse");
+        header.push("5th-Last Run Distance");
+        header.push("5th-Last Run Course");
+
+        header.push("4th-Last Run Energy");
+        header.push("4th-Last Run Racecourse");
+        header.push("4th-Last Run Distance");
+        header.push("4th-Last Run Course");
+
+        header.push("3th-Last Run Energy");
+        header.push("3th-Last Run Racecourse");
+        header.push("3th-Last Run Distance");
+        header.push("3th-Last Run Course");
+
+        header.push("2th-Last Run Energy");
+        header.push("2th-Last Run Racecourse");
+        header.push("2th-Last Run Distance");
+        header.push("2th-Last Run Course");
+
+        header.push("Last Run Energy");
+        header.push("Last Run Racecourse");
+        header.push("Last Run Distance");
+        header.push("Last Run Course");
+
+        header.push("Best Last 12 Months Energy");
+        header.push("Best Last 12 Months Racecourse");
+        header.push("Best Last 12 Months Distance");
+        header.push("Best Last 12 Months Course");
+
+        header.push("Best at Distance Energy");
+        header.push("Best at Distance Racecourse");
+        header.push("Best at Distance Distance");
+        header.push("Best at Distance Course");
+
+        header.push("Fitness Ratings");
+        header.push("SpeedPRO Energy");
+        header.push("SpeedPRO Energy Difference");
+
+        var headerJoined = header.join(",");
+        csv.push(headerJoined);
+
+        for (let key in speedpro) {
+            var row = [];
+
+            var data = speedpro[key];
+
+            row.push(data.runnernumber);
+            row.push(data.name_chi);
+            row.push(data.draw);
+            row.push(data.energyrequired);
+
+            row.push(data["lastrun_5th"].energy);
+            row.push(data["lastrun_5th"].racecourse_chi);
+            row.push(data["lastrun_5th"].distance);
+            row.push(data["lastrun_5th"].course);
+
+            row.push(data["lastrun_4th"].energy);
+            row.push(data["lastrun_4th"].racecourse_chi);
+            row.push(data["lastrun_4th"].distance);
+            row.push(data["lastrun_4th"].course);
+
+            row.push(data["lastrun_3rd"].energy);
+            row.push(data["lastrun_3rd"].racecourse_chi);
+            row.push(data["lastrun_3rd"].distance);
+            row.push(data["lastrun_3rd"].course);
+
+            row.push(data["lastrun_2nd"].energy);
+            row.push(data["lastrun_2nd"].racecourse_chi);
+            row.push(data["lastrun_2nd"].distance);
+            row.push(data["lastrun_2nd"].course);
+
+            row.push(data["lastrun"].energy);
+            row.push(data["lastrun"].racecourse_chi);
+            row.push(data["lastrun"].distance);
+            row.push(data["lastrun"].course);
+
+            row.push(data.bestlast12months.energy);
+            row.push(data.bestlast12months.racecourse_chi);
+            row.push(data.bestlast12months.distance);
+            row.push(data.bestlast12months.course);
+
+            row.push(data.bestatdistance.energy);
+            row.push(data.bestatdistance.racecourse_chi);
+            row.push(data.bestatdistance.distance);
+            row.push(data.bestatdistance.course);
+
+            row.push(data.fitnessrating);
+            row.push(data.speedproenergy);
+            row.push(data.speedproenergydifference);
+
+            var joined = row.join(",");
+            csv.push(joined);
+        }
+
+        return csv.join("\n");
+    }
+
+    function genPastRaceCsv(table) {
+        var rx = /\s+/g;
+        var csv = [];
+
+        for (var i = 0, row; row = table.rows[i]; i++) {
+            var csvRow = [];
+
+            for (var j = 0, col; col = row.cells[j]; j++) {
+                csvRow.push(col.textContent.trim().replace(rx, ' '));
+            }
+
+            csv.push(csvRow.join(","));
+        }
+
+        return csv.join("\n");
+    }
+
+    function onSubmitCurrentRace() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', `https://consvc.hkjc.com/-/media/Sites/JCRW/SpeedPro/current/sg_race_${document.current_race_form.raceno.value}`, true);
+        xhr.responseType = 'json';
+
+        console.log(`current: GET ${document.current_race_form.raceno.value}`);
+
+        xhr.onload = function() {
+            var status = xhr.status;
+            if (status !== 200) {
+                alert(`PROBLEM! Status: ${status}, response: ${xhr.response}`);
+                return;
+            }
+
+            var json = xhr.response;
+
+            console.log(`status ${xhr.status}`);
+            console.log(json);
+
+            var raceinfo = json['en-us'].RaceInfoChi;
+            var speedpro = json['en-us'].SpeedPRO;
+            var csv = genSpeedproCsv(raceinfo, speedpro);
+            console.log(csv);
+
+            var racedate = raceinfo.Date.replaceAll('/', '-');
+
+            download(`speedpro-data_${racedate}`, csv);
+        }
+
+        xhr.send();
+    }
+
+    function onSubmitPastRace() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://cors-anywhere.herokuapp.com/' + document.past_race_form.url.value, true);
+        xhr.responseType = 'document';
+
+        console.log(`past: GET ${document.past_race_form.url.value}`);
+
+        xhr.onload = function() {
+            var status = xhr.status;
+            if (status !== 200) {
+                alert(`PROBLEM! Status: ${status}, response: ${xhr.response}`);
+                return;
+            }
+
+            var doc = xhr.response;
+
+            console.log(`status ${xhr.status}`);
+            console.log(doc);
+
+            var table = doc.querySelector('.performance table');
+            console.log(table);
+            
+            var csv = genPastRaceCsv(table);
+
+            var raceMeeting = doc.querySelector('.raceMeeting_select').textContent;
+            var rx = /\d*\/\d*\/\d*/g;
+            var racedate = rx.exec(raceMeeting)[0].replaceAll('/', '-');
+            console.log(racedate);
+
+            download(`past-race-data_${racedate}.csv`, csv);
+        }
+
+        xhr.send();
+    }
+</script>
+
+</head>
+<body>
+    <header class="masthead">
+        <div class="container position-relative px-4 px-md-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <div class="post-heading">
+                        <h1>HKJC Data Scraper</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                    <div class="post-preview">
+                        <h2 class="post-title">Current Race</h2>
+                        <form name="current_race_form" action="javascript:onSubmitCurrentRace()">
+                            <label id="raceno" for="raceno" placeholder="Race Number">Race Number: </label>
+                            <input type="number" name="raceno" id="raceno_input"/>
+                            <input name="Submit" type="submit" value="Submit"/>
+                        </form>
+                    </div>
+                    <!-- Divider-->
+                    <hr class="my-4" />
+                    <div class="post-preview">
+                        <h2 class="post-title">Past Races</h2>
+                        <form name="past_race_form" action="javascript:onSubmitPastRace()">
+                            <label id="past_race_url" for="url" placeholder="URL">Past Race URL: </label>
+                            <input type="url" name="url" id="url_input"/>
+                            <input name="Submit" type="submit" value="Submit"/>
+                        </form>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="js/scripts.js"></script>
+</body>
+</html>
+
