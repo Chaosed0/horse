@@ -185,7 +185,7 @@
 
             var racedate = raceinfo.Date.replaceAll('/', '-');
 
-            download(`speedpro-data_${racedate}`, csv);
+            download(`speedpro-data_${racedate}.csv`, csv);
         }
 
         xhr.send();
@@ -244,7 +244,13 @@
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
                     <div class="post-preview">
-                        <h2 class="post-title">Current Race</h2>
+                        <h2 class="post-title">Current/Next Race</h2>
+						<ul>
+							<li>Go to the <a href="https://racing.hkjc.com/en-us/local/info/speedpro/speedguide?race=1&raceno=1">SpeedPro section of the HKJC website</a>.</li>
+							<li>Choose a race you wish to get info for</li>
+							<li>Input the number of the race in the "Race Number" box below. For example, if you wish to get data for race 5, type "5" into the box.</li>
+							<li>Press "submit" and download the data. The data can be imported to Excel.</li>
+						</ul>
                         <form name="current_race_form" action="javascript:onSubmitCurrentRace()">
                             <label id="raceno" for="raceno" placeholder="Race Number">Race Number: </label>
                             <input type="number" name="raceno" id="raceno_input"/>
@@ -255,6 +261,13 @@
                     <hr class="my-4" />
                     <div class="post-preview">
                         <h2 class="post-title">Past Races</h2>
+						<ul>
+							<li>Go to the <a href="https://racing.hkjc.com/en-us/local/information/localresults?racedate=2026/02/01">horse racing results page for HKJC</a>.</li>
+							<li>Choose a date you wish to get info for</li>
+							<li>If the webpage redirects you to the overseas webpage, then it cannot be scraped. If you wish to get this data, let Ed know.</li>
+							<li>Copy the URL of the webpage and paste it into the "Past Race URL" box below. For example, if you wish to obtain the data for 01/02/2026, you would paste: "https://racing.hkjc.com/en-us/local/information/localresults?racedate=2026/02/01"</li>
+							<li>Press "submit" and download the data. The data can be imported to Excel.</li>
+						</ul>
                         <form name="past_race_form" action="javascript:onSubmitPastRace()">
                             <label id="past_race_url" for="url" placeholder="URL">Past Race URL: </label>
                             <input type="url" name="url" id="url_input"/>
