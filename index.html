@@ -193,7 +193,7 @@
 
     function onSubmitPastRace() {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://cors-anywhere.herokuapp.com/' + document.past_race_form.url.value, true);
+        xhr.open('GET', 'https://cors-anywhere.com/' + document.past_race_form.url.value, true);
         xhr.responseType = 'document';
 
         console.log(`past: GET ${document.past_race_form.url.value}`);
@@ -264,6 +264,15 @@
             </div>
         </div>
     </div>
+    <footer>
+        <div class="container position-relative px-4 px-md-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <sub>Made by Ed for MC</sub>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
